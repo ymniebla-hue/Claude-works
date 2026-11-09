@@ -1,0 +1,362 @@
+---
+/**
+ * Intro «agentes construyendo» (decorativa).
+ *
+ * Al cargar, la página se ve como un esqueleto y varios «agentes» de colores van
+ * completando cada pieza marcada con data-capa, con un contador, un registro y un
+ * botón Saltar. El contenido está en el HTML desde el principio (bueno para SEO y
+ * lectores de pantalla); la intro solo lo oculta visualmente unos segundos.
+ *
+ * Uso: colócalo como PRIMER elemento dentro de <body> (o del <slot /> del layout).
+ *   <IntroAgentes />
+ *
+ * Marca las piezas en tus secciones:
+ *   <h1 data-capa="titular" data-log="compuso el titular">…</h1>
+ *   tipos: titular · texto · imagen · bloque · boton · nav
+ *
+ * En secciones con fondo oscuro, cambia el color del esqueleto:
+ *   <section style="--ia-esqueleto:#23324a; --ia-esqueleto-borde:#3f5f8a">
+ *
+ * No se muestra si el usuario pidió reducir el movimiento, si no hay JavaScript,
+ * ni (por defecto) más de una vez por sesión.
+ */
+interface Agente { nombre: string; color: string; texto?: string; revisa?: boolean }
+interface Props {
+  agentes?: Agente[];
+  roles?: Record<string, string[]>;
+  unaVezPorSesion?: boolean;
+}
+
+const {
+  agentes = [
+    { nombre: 'Diseño', color: '#7c5cff' },
+    { nombre: 'Copy', color: '#ff4d6d' },
+    { nombre: 'Fotos', color: '#2f8fff' },
+    { nombre: 'Maqueta', color: '#18a865' },
+    { nombre: 'Tipos', color: '#ff8a1f' },
+    { nombre: 'SEO', color: '#f2c81b', texto: '#1a1a1a' },
+    { nombre: 'Motion', color: '#00aebb' },
+    { nombre: 'Color', color: '#e04fb8' },
+    { nombre: 'Datos', color: '#4f63e8' },
+    { nombre: 'Móvil', color: '#86c13f', texto: '#1a1a1a' },
+    { nombre: 'Accesib.', color: '#d9542b' },
+    { nombre: 'QA', color: '#8d949b', revisa: true },
+  ],
+  roles = {
+    titular: ['Copy', 'Tipos'],
+    texto: ['Copy', 'Tipos', 'SEO'],
+    imagen: ['Fotos', 'Color', 'Motion'],
+    bloque: ['Maqueta', 'Diseño', 'Móvil', 'Datos'],
+    boton: ['Diseño', 'Accesib.', 'Motion'],
+    nav: ['Maqueta', 'Accesib.', 'SEO'],
+  },
+  unaVezPorSesion = true,
+} = Astro.props;
+
+const config = JSON.stringify({ agentes, roles, unaVezPorSesion });
+---
+
+<script define:vars={{ unaVezPorSesion }}>
+  // Corre antes de pintar el resto del <body>: decide si hay intro.
+  (function () {
+    try {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (unaVezPorSesion && sessionStorage.getItem('ia-vista')) return;
+    } catch (e) { /* sin sessionStorage: se muestra igual */ }
+    var raiz = document.documentElement;
+    raiz.classList.add('ia-construyendo');
+    // Si el script principal no llega a arrancar, la página se muestra igual.
+    setTimeout(function () {
+      if (!raiz.dataset.iaActiva) raiz.classList.remove('ia-construyendo');
+    }, 6000);
+  })();
+</script>
+
+<div id="ia-obra" aria-hidden="true" data-config={config}></div>
+
+<div class="ia-hud" aria-hidden="true" hidden>
+  <span class="ia-hud__puntos"></span>
+  <span><b class="ia-hud__agentes"></b> agentes</span>
+  <span><b class="ia-hud__hechas">0</b>/<span class="ia-hud__total">0</span> capas</span>
+  <span class="ia-hud__barra"><b></b></span>
+  <span class="ia-hud__estado">construyendo</span>
+</div>
+
+<aside class="ia-registro" aria-label="Animación de entrada" hidden>
+  <p class="ia-registro__titulo" aria-hidden="true">REGISTRO DE AGENTES</p>
+  <ol aria-hidden="true"></ol>
+  <button type="button">Saltar animación</button>
+</aside>
+
+<style is:global>
+  :root {
+    --ia-esqueleto: #e4eef6;
+    --ia-esqueleto-borde: #9fc4e2;
+    --ia-fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ia-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  /* Pieza pendiente: se ve el hueco, no el contenido. */
+  .ia-construyendo [data-capa]:not(.ia-lista) {
+    background: var(--ia-esqueleto) !important;
+    color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: 1px dashed var(--ia-esqueleto-borde);
+    outline-offset: -1px;
+    border-radius: 6px;
+  }
+  .ia-construyendo [data-capa]:not(.ia-lista) * { visibility: hidden; }
+  .ia-construyendo [data-capa].ia-trabajando:not(.ia-lista) { outline: 2px solid var(--ia-c); outline-offset: 2px; }
+
+  .ia-entra { animation: ia-aparece 0.5s ease-out both; }
+  .ia-entra[data-capa="titular"], .ia-entra[data-capa="texto"] { animation: ia-barrido 0.6s cubic-bezier(.2,.7,.2,1) both; }
+  .ia-entra[data-capa="imagen"] { animation: ia-revela 1s ease-out both; }
+  @keyframes ia-aparece { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes ia-barrido { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes ia-revela { from { filter: blur(18px) saturate(0); opacity: 0.5; } }
+
+  #ia-obra { position: absolute; top: 0; left: 0; width: 100%; height: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+  .ia-agente { position: absolute; top: 0; left: 0; display: flex; align-items: flex-start; gap: 2px; transition-property: transform, opacity; transition-timing-function: cubic-bezier(.25,.8,.25,1); will-change: transform; }
+  .ia-agente svg { width: 14px; height: 18px; flex: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
+  .ia-agente span { margin-top: 12px; padding: 2px 7px; border-radius: 999px; background: var(--ia-c); color: var(--ia-t, #fff); font: 600 11px/1.4 var(--ia-fuente); white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .15); }
+  .ia-agente.ia-ocupado span { animation: ia-latido 0.6s ease-in-out infinite alternate; }
+  @keyframes ia-latido { to { transform: scale(1.08); } }
+
+  .ia-hud { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 8px; border-radius: 999px; background: #121212; color: #eee; font: 500 12px/1 var(--ia-fuente); box-shadow: 0 6px 24px rgb(0 0 0 / .25); transition: opacity .6s, transform .6s; white-space: nowrap; }
+  .ia-hud[hidden], .ia-registro[hidden] { display: none; }
+  .ia-hud__puntos { display: flex; }
+  .ia-hud__puntos i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #121212; margin-left: -5px; }
+  .ia-hud__puntos i:first-child { margin-left: 0; }
+  .ia-hud__barra { width: 90px; height: 4px; border-radius: 4px; background: #333; overflow: hidden; }
+  .ia-hud__barra b { display: block; height: 100%; width: 0; background: #f2b33d; transition: width .3s; }
+  .ia-hud__estado { color: #f2b33d; }
+  .ia-hud__estado::before { content: "● "; }
+  .ia-registro { position: fixed; right: 16px; bottom: 16px; z-index: 50; width: 290px; padding: 12px; border-radius: 10px; background: #121212; color: #ddd; font: 11px/1.5 var(--ia-mono); box-shadow: 0 6px 24px rgb(0 0 0 / .3); transition: opacity .6s; }
+  .ia-registro__titulo { margin: 0 0 8px; font: 600 10px/1 var(--ia-mono); letter-spacing: .14em; color: #999; }
+  .ia-registro ol { list-style: none; margin: 0; padding: 0; min-height: 66px; }
+  .ia-registro li { display: flex; gap: 6px; align-items: baseline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; animation: ia-aparece .3s ease-out; }
+  .ia-registro time { color: #777; }
+  .ia-registro mark { padding: 0 5px; border-radius: 3px; background: var(--ia-c); color: var(--ia-t, #fff); font-weight: 600; }
+  .ia-registro button { width: 100%; margin-top: 10px; padding: 7px; border: 0; border-radius: 6px; background: #f1f1f1; color: #111; font: 600 11px/1 var(--ia-mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .ia-registro button:focus-visible { outline: 2px solid #f2b33d; outline-offset: 2px; }
+  .ia-oculto { opacity: 0; pointer-events: none; }
+  .ia-hud.ia-oculto { transform: translate(-50%, 20px); }
+
+  @media (max-width: 860px) {
+    .ia-hud { top: 12px; bottom: auto; }
+    .ia-hud.ia-oculto { transform: translate(-50%, -20px); }
+    .ia-registro { left: 16px; right: 16px; width: auto; }
+    .ia-registro ol { min-height: 0; }
+    .ia-registro li:nth-child(n+3) { display: none; }
+  }
+  @media (max-width: 520px) { .ia-hud__barra, .ia-hud__puntos { display: none; } .ia-hud { padding: 8px 14px; } }
+</style>
+
+<script>
+  const raiz = document.documentElement;
+  const obra = document.getElementById('ia-obra');
+  const capas = [...document.querySelectorAll<HTMLElement>('[data-capa]')];
+
+  if (obra && raiz.classList.contains('ia-construyendo')) {
+    if (!capas.length) raiz.classList.remove('ia-construyendo');
+    else iniciar(obra);
+  }
+
+  function iniciar(obra: HTMLElement) {
+    raiz.dataset.iaActiva = '1';
+    type Agente = { nombre: string; color: string; texto?: string; revisa?: boolean; x: number; y: number; el: HTMLElement };
+    const { agentes: lista, roles, unaVezPorSesion } = JSON.parse(obra.dataset.config || '{}');
+    const AGENTES: Agente[] = lista.map((a: object) => ({ ...a, x: 0, y: 0 }));
+    const CAPAS_A_LA_VEZ = 10;
+    const VERBOS: Record<string, string> = {
+      titular: 'compuso un titular', texto: 'escribió un texto', imagen: 'colocó una imagen',
+      bloque: 'maquetó un bloque', boton: 'dibujó un botón', nav: 'montó la navegación',
+    };
+
+    const hud = document.querySelector<HTMLElement>('.ia-hud')!;
+    const registro = document.querySelector<HTMLElement>('.ia-registro')!;
+    const listaLog = registro.querySelector('ol')!;
+    const $hechas = hud.querySelector('.ia-hud__hechas')!;
+    const $barra = hud.querySelector<HTMLElement>('.ia-hud__barra b')!;
+    const $estado = hud.querySelector<HTMLElement>('.ia-hud__estado')!;
+    const pendientes = capas.slice();
+    const terminadas: HTMLElement[] = [];
+    const t0 = performance.now();
+    let hechas = 0;
+    let cancelado = false;
+    let seguir = true;
+
+    const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const azar = (a: number, b: number) => a + Math.random() * (b - a);
+    const enDocumento = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+    };
+
+    hud.hidden = false;
+    registro.hidden = false;
+    hud.querySelector('.ia-hud__total')!.textContent = String(capas.length);
+    hud.querySelector('.ia-hud__agentes')!.textContent = String(AGENTES.length);
+    hud.querySelector('.ia-hud__puntos')!.innerHTML = AGENTES.map((a) => `<i style="background:${a.color}"></i>`).join('');
+
+    const ajustarObra = () => { obra.style.height = document.documentElement.scrollHeight + 'px'; };
+    ajustarObra();
+    addEventListener('resize', ajustarObra);
+
+    const PUNTERO = '<svg viewBox="0 0 14 18"><path d="M1 1 L1 15 L5 11 L8 17 L10.5 16 L7.5 10 L13 10 Z" fill="var(--ia-c)" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+    for (const a of AGENTES) {
+      const el = document.createElement('div');
+      el.className = 'ia-agente';
+      el.style.setProperty('--ia-c', a.color);
+      if (a.texto) el.style.setProperty('--ia-t', a.texto);
+      el.innerHTML = PUNTERO;
+      const etiqueta = document.createElement('span');
+      etiqueta.textContent = a.nombre;
+      el.appendChild(etiqueta);
+      a.x = azar(40, Math.max(60, innerWidth - 140));
+      a.y = azar(120, Math.max(140, innerHeight - 120));
+      el.style.transform = `translate(${a.x}px, ${a.y}px)`;
+      el.style.opacity = '0';
+      obra.appendChild(el);
+      a.el = el;
+    }
+
+    const anotar = (agente: Agente, texto: string) => {
+      const s = ((performance.now() - t0) / 1000).toFixed(1).padStart(4, '0');
+      const li = document.createElement('li');
+      const hora = document.createElement('time');
+      hora.textContent = `00:${s}`;
+      const marca = document.createElement('mark');
+      marca.textContent = agente.nombre;
+      marca.style.setProperty('--ia-c', agente.color);
+      if (agente.texto) marca.style.setProperty('--ia-t', agente.texto);
+      li.append(hora, marca, ' ' + texto);
+      listaLog.prepend(li);
+      while (listaLog.children.length > 4) listaLog.lastElementChild!.remove();
+    };
+
+    const tieneAncestroPendiente = (el: HTMLElement) => {
+      const p = el.parentElement?.closest('[data-capa]');
+      return !!p && !p.classList.contains('ia-lista');
+    };
+
+    const siguienteCapa = (agente: Agente) => {
+      const ventana = pendientes.slice(0, CAPAS_A_LA_VEZ);
+      let i = ventana.findIndex((el) => !tieneAncestroPendiente(el) && (roles[el.dataset.capa!] || []).includes(agente.nombre));
+      if (i < 0) i = ventana.findIndex((el) => !tieneAncestroPendiente(el));
+      return i < 0 ? null : pendientes.splice(i, 1)[0];
+    };
+
+    const mover = async (agente: Agente, x: number, y: number) => {
+      const ms = Math.max(350, Math.min(900, Math.hypot(x - agente.x, y - agente.y) * 0.9));
+      agente.el.style.transitionDuration = ms + 'ms';
+      agente.el.style.transform = `translate(${x}px, ${y}px)`;
+      agente.x = x;
+      agente.y = y;
+      await espera(ms);
+    };
+
+    const irA = (agente: Agente, el: HTMLElement) => {
+      const r = enDocumento(el);
+      return mover(agente, r.x + r.w * azar(0.15, 0.8), r.y + Math.min(r.h, 260) * azar(0.2, 0.75));
+    };
+
+    const terminarCapa = (el: HTMLElement) => {
+      el.classList.remove('ia-trabajando');
+      el.classList.add('ia-lista', 'ia-entra');
+      el.addEventListener('animationend', () => el.classList.remove('ia-entra'), { once: true });
+      terminadas.push(el);
+      hechas++;
+      $hechas.textContent = String(hechas);
+      $barra.style.width = (hechas / capas.length) * 100 + '%';
+    };
+
+    const trabajar = async (agente: Agente, retraso: number) => {
+      await espera(retraso);
+      if (cancelado) return;
+      agente.el.style.opacity = '1';
+      while (!cancelado) {
+        const el = siguienteCapa(agente);
+        if (!el) {
+          if (!pendientes.length) break;
+          await espera(120);
+          continue;
+        }
+        await irA(agente, el);
+        if (cancelado) return;
+        el.style.setProperty('--ia-c', agente.color);
+        el.classList.add('ia-trabajando');
+        agente.el.classList.add('ia-ocupado');
+        await espera(azar(900, 1800));
+        if (cancelado) return;
+        agente.el.classList.remove('ia-ocupado');
+        terminarCapa(el);
+        anotar(agente, el.dataset.log || VERBOS[el.dataset.capa!] || 'terminó una capa');
+      }
+    };
+
+    // El agente que «revisa» va detrás, repasando lo recién terminado.
+    const revisar = async (agente: Agente, retraso: number) => {
+      await espera(retraso);
+      if (cancelado) return;
+      agente.el.style.opacity = '1';
+      while (!cancelado && hechas < capas.length) {
+        const el = terminadas[terminadas.length - 1 - Math.floor(Math.random() * Math.min(4, terminadas.length))];
+        if (!el) { await espera(300); continue; }
+        await irA(agente, el);
+        agente.el.classList.add('ia-ocupado');
+        await espera(azar(700, 1300));
+        agente.el.classList.remove('ia-ocupado');
+      }
+    };
+
+    // La página baja sola siguiendo la obra, hasta que el usuario hace scroll.
+    const dejarDeSeguir = () => { seguir = false; };
+    for (const ev of ['wheel', 'touchstart', 'keydown']) addEventListener(ev, dejarDeSeguir, { passive: true, once: true });
+    const seguimiento = setInterval(() => {
+      if (!seguir || cancelado) return;
+      const primera = capas.find((el) => !el.classList.contains('ia-lista'));
+      if (!primera) return;
+      const top = primera.getBoundingClientRect().top;
+      if (top > innerHeight * 0.55 || top < 0) scrollTo({ top: scrollY + top - innerHeight * 0.22, behavior: 'smooth' });
+    }, 500);
+
+    const cerrar = () => {
+      clearInterval(seguimiento);
+      try { if (unaVezPorSesion) sessionStorage.setItem('ia-vista', '1'); } catch { /* nada */ }
+      $estado.textContent = 'lista';
+      $estado.style.color = '#7ddc8a';
+      setTimeout(() => {
+        AGENTES.forEach((a) => { a.el.style.opacity = '0'; });
+        hud.classList.add('ia-oculto');
+        registro.classList.add('ia-oculto');
+        raiz.classList.remove('ia-construyendo');
+        setTimeout(() => { obra.remove(); hud.remove(); registro.remove(); }, 700);
+      }, 1200);
+    };
+
+    const saltar = () => {
+      if (cancelado) return;
+      cancelado = true;
+      capas.forEach((el) => { el.classList.remove('ia-trabajando'); el.classList.add('ia-lista'); });
+      hechas = capas.length;
+      $hechas.textContent = String(hechas);
+      $barra.style.width = '100%';
+      cerrar();
+    };
+    registro.querySelector('button')!.addEventListener('click', saltar);
+    setTimeout(saltar, 45000); // red de seguridad: nunca se queda a medias
+
+    scrollTo(0, 0);
+    Promise.all(AGENTES.map((a, i) => (a.revisa ? revisar : trabajar)(a, 150 + i * 90)))
+      .then(() => {
+        if (cancelado) return;
+        cancelado = true;
+        const qa = AGENTES.find((a) => a.revisa) || AGENTES[AGENTES.length - 1];
+        anotar(qa, 'revisó la página: todo en su sitio');
+        cerrar();
+      })
+      .catch(saltar);
+  }
+</script>
