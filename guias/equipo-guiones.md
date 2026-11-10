@@ -139,9 +139,16 @@ conversor de Markdown.
 
 ## Cuánto cuesta y cuánto tarda
 
-- Un lote de 12 en ES+EN pone a trabajar unos 20 agentes en total. Consume bastante más uso que
+- Un lote de 12 en ES+EN pone a trabajar más de 20 agentes en total. Consume bastante más uso que
   escribir el lote en una sola conversación. A cambio, cada guion lo escribe un agente concentrado
   en un solo formato y lo revisa otro que no lo escribió.
+- **Dato real de la prueba** (cliente ficticio, 12 guiones): solo la primera ronda (plan, 12
+  guiones y revisión, 9 agentes) consumió alrededor de 1,5 millones de tokens. Con correcciones e
+  inglés, cuenten con bastante más.
+- En esa misma prueba, el revisor pidió correcciones en 8 de los 12 guiones en la primera ronda:
+  le pasó la misma historia a dos guiones distintos, un hook que no frenaba el scroll, una promesa
+  sin confirmar… Por eso existen las rondas de corrección, y por eso no conviene saltarse al
+  revisor.
 - Si su plan tiene límites de uso, prueben primero con `/lote-guiones <cliente> 5 ES`.
 - Para ahorrar, cambia `model: inherit` por `model: sonnet` en `adaptador-en.md` (el productor ya
   usa Sonnet). Para los guionistas y el revisor conviene el mejor modelo disponible.

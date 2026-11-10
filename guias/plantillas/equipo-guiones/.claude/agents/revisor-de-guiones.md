@@ -51,7 +51,9 @@ segunda ronda).
 Escribe `<lote>/revision.md` (en una segunda ronda, añade una sección «Ronda 2» al final):
 
 1. Tabla resumen: guion · veredicto (APROBADO o CORREGIR) · motivos principales.
-2. Por cada guion con CORREGIR: correcciones concretas. Cita el texto actual y propón el cambio.
+2. Por cada guion con CORREGIR: correcciones concretas y numeradas (8 como mucho, las más
+   importantes primero). Cita el texto actual y propón el cambio. El guionista corregirá solo con
+   esta lista, así que cada corrección debe entenderse sola.
 3. Observaciones de lote (diversidad y cobertura).
 4. Lista de `[DATO A VERIFICAR]` y `[PENDIENTE]` que siguen abiertos.
 5. Última línea: `Lote listo: sí` o `Lote listo: no`.

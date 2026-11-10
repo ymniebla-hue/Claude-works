@@ -32,18 +32,25 @@ El encargo te da la carpeta del cliente, la carpeta del lote, el número de guio
    cada uno con su fuente (brief, documento o URL). Cualquier cifra que no esté en esta lista
    está prohibida en los guiones.
 
-   **C. Personas (PDA).** Entre 2 y 4 personas con su situación, deseo y nivel de awareness
-   (frío, tibio, caliente).
+   **C. Personas (PDA).** Entre 2 y 4 personas con su situación, deseo, nivel de awareness
+   (frío, tibio, caliente) e idioma preferido. Indica si a cada persona se le habla de **tú o de
+   usted** (por ejemplo, usted para mayores de 55 si el tono de la marca lo pide).
 
    **D. Mensajes ya usados.** Los de lotes anteriores, para no repetirlos.
 
    **E. Tabla de asignación.** Una fila por guion (G01, G02, …) con estas columnas: formato (según
    la distribución de la skill para este tamaño de lote), persona, awareness, funnel, duración,
-   idioma, tema, mensaje central (una frase), ejecución visual y «por qué es distinto».
+   idioma, tema, mensaje central (una frase), ejecución visual, personajes y situación, tipos de
+   hook y «por qué es distinto».
    - Ningún par de guiones comparte mensaje central.
    - Aplica el criterio de diversidad de la skill (mensaje, ejecución visual y formato): si dos
      guiones coinciden en dos de los tres, cambia uno.
    - Reparte las personas y las etapas del funnel por todo el lote.
+   - **Personajes y situación únicos.** Los guionistas trabajan a la vez y no se ven entre sí:
+     asigna a cada guion nombres de personaje y una situación (lugar, momento, conflicto) que no
+     se repitan en el lote.
+   - **Tipos de hook.** Asigna los 3 tipos de hook de cada guion (1 en los reels cortos) de modo
+     que dos guiones para la misma persona no abran con el mismo tipo.
 
    **F. Grupos para los guionistas.** Un grupo por formato (por ejemplo «G01–G02 · Falso Podcast»).
    Cada grupo será un guionista trabajando en paralelo.
@@ -54,6 +61,9 @@ El encargo te da la carpeta del cliente, la carpeta del lote, el número de guio
 
 ## Reglas
 
+- **Sé conciso.** El plan lo leen siete guionistas y el revisor: viñetas cortas en A–D y G, y
+  todo el detalle útil dentro de la tabla. Las reglas de compliance van aquí una sola vez, para
+  que los guiones no tengan que repetirlas.
 - No escribas guiones.
 - No inventes datos: si algo no está en las fuentes, va a Pendientes.
 - Solo editas `00-plan.md`.
