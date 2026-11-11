@@ -1,0 +1,239 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Planes Iris Digital Lab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Propuesta de una sola columna: dos planes orgánicos arriba, dos con pauta debajo, y una tabla que los compara lado a lado. Look oscuro único, el de las propuestas de Iris. */
+  :root{
+    color-scheme:dark;
+    --ink:#0c0c0e; --panel:#151518; --panel-2:#1b1b1f;
+    --line:rgba(245,244,238,.12); --text:#f0efe9; --muted:#a3a29a;
+    --yellow:#f5c400; --on-yellow:#141200; --on-yellow-soft:#3a3000;
+    --display:'Archivo Black','Arial Black',sans-serif;
+    --body:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
+    --mono:'IBM Plex Mono','Courier New',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--ink); color:var(--text); font-family:var(--body); font-size:16.5px; line-height:1.62; -webkit-font-smoothing:antialiased;}
+  .page{max-width:960px; margin:0 auto; padding-block:0 90px; padding-left:max(20px, env(safe-area-inset-left, 0px)); padding-right:max(20px, env(safe-area-inset-right, 0px));}
+  .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap;}
+
+  /* Cabecera */
+  .hero{padding-block:64px 48px; border-bottom:1px solid var(--line);}
+  .brandline{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:52px;}
+  .wordmark{font-family:var(--display); font-size:15px; letter-spacing:.04em;}
+  .wordmark b{color:var(--yellow); font-weight:400;}
+  .doc-tag{font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
+  .eyebrow{font-family:var(--mono); font-size:12.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--yellow); margin-bottom:18px;}
+  h1{font-family:var(--display); font-weight:400; font-size:clamp(40px,8vw,76px); line-height:1; letter-spacing:-.01em; text-transform:uppercase; text-wrap:balance;}
+  h1 .dot{color:var(--yellow);}
+  .hero-sub{margin-top:24px; max-width:60ch; font-size:18.5px; color:var(--muted); text-wrap:pretty;}
+  .hero-meta{margin-top:32px; display:flex; gap:10px 28px; flex-wrap:wrap; font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase;}
+  .hero-meta b{color:var(--text); font-weight:500;}
+
+  /* Secciones */
+  .sec{padding-block:56px 8px;}
+  .sec-head{display:flex; flex-direction:column; gap:10px; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:30px;}
+  .sec-head .kicker{font-family:var(--mono); font-size:12px; color:var(--yellow); letter-spacing:.16em; text-transform:uppercase;}
+  h2{font-family:var(--display); font-weight:400; font-size:clamp(22px,4vw,30px); line-height:1.15; text-transform:uppercase; text-wrap:balance;}
+  .lead{max-width:66ch; color:var(--muted);}
+
+  /* Planes */
+  .tiers{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:30px; align-items:stretch;}
+  @media (max-width:720px){ .tiers{grid-template-columns:1fr;} }
+  .tier{min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:28px 26px; display:flex; flex-direction:column; gap:16px;}
+  .tname{font-family:var(--display); font-weight:400; font-size:19px; line-height:1.2; text-transform:uppercase;}
+  .tfor{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:-8px;}
+  .price{font-family:var(--display); font-size:38px; color:var(--yellow); line-height:1; font-variant-numeric:tabular-nums;}
+  .price small{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.06em;}
+  .tier ul{list-style:none; display:flex; flex-direction:column; gap:9px; border-top:1px solid var(--line); padding-top:16px;}
+  .tier li{font-size:14px; color:var(--muted); padding-left:20px; position:relative; line-height:1.5;}
+  .tier li::before{content:'—'; position:absolute; left:0; color:var(--yellow);}
+  .tier li b{color:var(--text); font-weight:600;}
+  .goal{margin-top:auto; border-top:1px solid var(--line); padding-top:14px; font-size:13.5px; color:var(--muted);}
+  .goal b{color:var(--text);}
+
+  /* Comparativa */
+  .tblwrap{position:relative; overflow-x:auto; margin-top:26px; border:1px solid var(--line); border-radius:12px;}
+  table.cmp{border-collapse:collapse; width:100%; min-width:620px; font-size:14px;}
+  .cmp th, .cmp td{padding:13px 16px; text-align:center; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .cmp thead th{font-family:var(--mono); font-weight:500; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); background:var(--panel-2);}
+  .cmp tbody th{text-align:left; font-weight:600; color:var(--text);}
+  .cmp thead th:first-child{text-align:left;}
+  .cmp td{color:var(--muted); font-variant-numeric:tabular-nums;}
+  .cmp td.yes{color:var(--yellow); font-weight:700;}
+  .cmp td.val{color:var(--text);}
+  .cmp tbody tr:last-child th, .cmp tbody tr:last-child td{border-bottom:none; background:var(--panel);}
+  .cmp tbody tr:last-child td{font-family:var(--display); font-size:17px; color:var(--yellow);}
+
+  /* Condiciones */
+  .terms{display:flex; flex-direction:column; margin-top:6px;}
+  .term{display:grid; grid-template-columns:200px minmax(0,1fr); gap:20px; padding-block:18px; border-bottom:1px solid var(--line);}
+  .term:last-child{border-bottom:none;}
+  @media (max-width:640px){ .term{grid-template-columns:minmax(0,1fr); gap:6px;} }
+  .term .t{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding-top:3px;}
+  .term p{font-size:14.5px; max-width:64ch;}
+
+  /* Cierre */
+  .cta{margin-top:56px; border-radius:14px; background:var(--yellow); color:var(--on-yellow); padding:36px 34px;}
+  .cta h2{color:var(--on-yellow);}
+  .cta p{margin-top:14px; max-width:62ch; color:var(--on-yellow-soft); font-weight:500; font-size:16px;}
+  @media (max-width:480px){ .cta{padding:28px 22px;} .tier{padding:24px 20px;} }
+
+  footer{margin-top:60px; padding-top:26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:center;}
+  footer .wordmark{font-size:14px;}
+  footer .fine{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase;}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="brandline">
+      <div class="wordmark">IRIS<b>·</b>DIGITAL<b>·</b>LAB</div>
+      <div class="doc-tag">Propuesta comercial · Noviembre 2026</div>
+    </div>
+    <div class="eyebrow">Producción audiovisual &amp; marketing digital</div>
+    <h1>Planes de contenido<span class="dot">.</span></h1>
+    <p class="hero-sub">Cuatro formas de trabajar con nosotros. Puedes empezar solo con contenido orgánico y sumar manejo de redes, pauta o la web de promoción cuando tu marca lo necesite.</p>
+    <div class="hero-meta">
+      <span>Por <b>Iris Digital Lab</b> · Miami, FL</span>
+      <span>Planes <b>mensuales</b></span>
+      <span>Desde <b>$1,300 / mes</b></span>
+    </div>
+  </header>
+
+  <section class="sec" id="organico">
+    <div class="sec-head">
+      <span class="kicker">Contenido orgánico</span>
+      <h2>Videos para tus redes</h2>
+    </div>
+    <p class="lead">Grabamos, guionizamos y editamos el contenido de tu marca cada mes. La diferencia entre los dos planes es quién publica: tú, o nosotros.</p>
+    <div class="tiers">
+
+      <article class="tier">
+        <h3 class="tname">Orgánico</h3>
+        <div class="tfor">Producción de video</div>
+        <div class="price">$1,300 <small>/ MES</small></div>
+        <ul>
+          <li><b>12 videos al mes</b> en 2 días de grabación (6+6)</li>
+          <li><b>Guion individual</b> para cada pieza</li>
+          <li>Edición premium: color, motion graphics, subtítulos y audio</li>
+          <li>Entrega en vertical 9:16 para Reels y TikTok</li>
+          <li>Archivos listos para publicar. <b>Tú manejas tus redes</b></li>
+        </ul>
+        <p class="goal"><b>Para quién:</b> marcas que ya publican por su cuenta y necesitan contenido profesional todos los meses.</p>
+      </article>
+
+      <article class="tier">
+        <h3 class="tname">Orgánico + Redes</h3>
+        <div class="tfor">Producción + manejo de redes</div>
+        <div class="price">$1,700 <small>/ MES</small></div>
+        <ul>
+          <li>Todo lo del plan Orgánico: <b>12 videos</b>, guiones y edición</li>
+          <li><b>3 publicaciones semanales</b> en Instagram y Facebook (videos + estáticas)</li>
+          <li>Copies completos: captions, hashtags y CTAs por pieza</li>
+          <li>Calendario de contenido mensual</li>
+          <li>Gestión de comunidad y <b>reporte mensual de métricas</b></li>
+        </ul>
+        <p class="goal"><b>Para quién:</b> marcas que quieren presencia constante en redes sin cargar a su equipo.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="sec" id="pauta">
+    <div class="sec-head">
+      <span class="kicker">Con pauta</span>
+      <h2>Contenido que también vende</h2>
+    </div>
+    <p class="lead">El orgánico construye la marca con quien ya te sigue. La pauta lleva ese mismo contenido a gente nueva. Estos dos planes agregan anuncios en Meta, solos o junto con todo lo demás.</p>
+    <div class="tiers">
+
+      <article class="tier">
+        <h3 class="tname">Ads</h3>
+        <div class="tfor">Contenido para pauta + Meta Ads</div>
+        <div class="price">$1,900 <small>/ MES</small></div>
+        <ul>
+          <li><b>6 videos al mes</b> pensados como anuncios, en 1 día de grabación</li>
+          <li>Un gancho y un ángulo distinto en cada pieza, para probar qué convierte</li>
+          <li>Guion individual y edición premium</li>
+          <li><b>Gestión de Meta Ads</b>: campañas, segmentación, retargeting y pruebas A/B</li>
+          <li>Reporte mensual de pauta con costo por lead y retorno</li>
+        </ul>
+        <p class="goal"><b>Para quién:</b> marcas que ya tienen sus redes cubiertas y quieren generar clientes con anuncios. No incluye publicación orgánica.</p>
+      </article>
+
+      <article class="tier">
+        <h3 class="tname">Total</h3>
+        <div class="tfor">Orgánico + redes + ads + web</div>
+        <div class="price">$2,800 <small>/ MES</small></div>
+        <ul>
+          <li><b>12 videos al mes</b> en 2 días de grabación, que salen en tus redes y se adaptan también como anuncios</li>
+          <li>Todo lo de Orgánico + Redes: publicaciones, copies, calendario y comunidad</li>
+          <li>Todo lo de Ads: gestión de Meta Ads, retargeting y pruebas A/B</li>
+          <li><b>Web de promoción</b>: una página donde llegan los anuncios, con formulario o WhatsApp y medición de conversiones</li>
+          <li>Reporte unificado: orgánico + pauta en un solo lugar</li>
+        </ul>
+        <p class="goal"><b>Para quién:</b> marcas que quieren el recorrido completo, desde el video hasta el cliente que escribe.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="sec" id="comparativa">
+    <div class="sec-head">
+      <span class="kicker">Comparativa</span>
+      <h2>Qué incluye cada plan</h2>
+    </div>
+    <div class="tblwrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="col">Incluye</th>
+            <th scope="col">Orgánico</th>
+            <th scope="col">Orgánico + Redes</th>
+            <th scope="col">Ads</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Videos al mes</th><td class="val">12</td><td class="val">12</td><td class="val">6</td><td class="val">12</td></tr>
+          <tr><th scope="row">Días de grabación</th><td class="val">2</td><td class="val">2</td><td class="val">1</td><td class="val">2</td></tr>
+          <tr><th scope="row">Guion y edición premium</th><td class="yes">✓<span class="sr"> Incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">3 publicaciones semanales</th><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">Copies y calendario</th><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">Gestión de comunidad</th><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">Gestión de Meta Ads</th><td>—<span class="sr"> No incluido</span></td><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">Web de promoción</th><td>—<span class="sr"> No incluido</span></td><td>—<span class="sr"> No incluido</span></td><td>—<span class="sr"> No incluido</span></td><td class="yes">✓<span class="sr"> Incluido</span></td></tr>
+          <tr><th scope="row">Reporte mensual</th><td>—<span class="sr"> No incluido</span></td><td class="val">Orgánico</td><td class="val">Pauta</td><td class="val">Unificado</td></tr>
+          <tr><th scope="row">Inversión mensual</th><td>$1,300</td><td>$1,700</td><td>$1,900</td><td>$2,800</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec" id="condiciones">
+    <div class="sec-head">
+      <span class="kicker">Condiciones</span>
+      <h2>Cómo trabajamos</h2>
+    </div>
+    <div class="terms">
+      <div class="term"><span class="t">Duración</span><p>Contrato inicial de 3 meses, renovable automáticamente mes a mes. Después del período inicial, cancelación con 30 días de aviso por escrito.</p></div>
+      <div class="term"><span class="t">Pagos</span><p>Día 1 de cada mes, con vencimiento a 5 días hábiles.</p></div>
+      <div class="term"><span class="t">Grabaciones</span><p>El cliente provee locación, productos y acceso. Iris Digital Lab aporta dirección, guiones y equipo técnico completo. Reprogramación con 72 horas de anticipación.</p></div>
+      <div class="term"><span class="t">Revisiones</span><p>Hasta 2 rondas de revisión por pieza de contenido.</p></div>
+      <div class="term"><span class="t">Pauta publicitaria</span><p>En los planes Ads y Total, el presupuesto de anuncios lo paga el cliente directamente a Meta. Iris Digital Lab lo administra y optimiza.</p></div>
+      <div class="term"><span class="t">Propiedad</span><p>Derechos de uso comercial plenos al completar cada pago mensual. Iris Digital Lab retiene derecho de uso en portafolio.</p></div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h2>El siguiente paso</h2>
+    <p>Elige el plan con el que quieres empezar y agendamos tu primer día de grabación. Si arrancas con contenido orgánico, los demás planes quedan disponibles para cuando quieras sumar redes, pauta o la web.</p>
+  </div>
+
+  <footer>
+    <div class="wordmark">IRIS<b>·</b>DIGITAL<b>·</b>LAB</div>
+    <div class="fine">irisdigitallab.com · hello@irisdigitallab.com · Miami, FL</div>
+  </footer>
+
+</div>
