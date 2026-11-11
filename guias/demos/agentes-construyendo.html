@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudio Brisa — demo: agentes construyendo la web</title>
+<meta name="description" content="Demo de una intro animada en la que 12 agentes «construyen» la página de un estudio de arquitectura ficticio.">
+<script>
+  // Se activa solo si hay JavaScript y el usuario no pidió reducir el movimiento.
+  // Sin JS, la página se ve completa desde el principio.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('construyendo');
+  }
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+</script>
+<style>
+  :root {
+    --papel: #f4f1ea;
+    --tinta: #16140f;
+    --suave: #6b665c;
+    --linea: #d9d3c7;
+    --acento: #b5562f;
+    --oscuro: #15140f;
+    --esqueleto: #e4eef6;
+    --esqueleto-borde: #9fc4e2;
+    --titular: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --cuerpo: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--papel); color: var(--tinta); font-family: var(--cuerpo); line-height: 1.55; overflow-x: hidden; }
+  a { color: inherit; }
+  svg { display: block; width: 100%; height: auto; }
+  .contenedor { width: min(1200px, 100% - 32px); margin-inline: auto; }
+  .logo, .hero h1, .datos b, .h2, .tarjeta h3, .paso h3, .cifra b { font-weight: 900; }
+  em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--acento); }
+  .etiqueta { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--suave); }
+
+  /* Cabecera */
+  .cabecera { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; }
+  .logo { font-family: var(--titular); font-size: 1.1rem; letter-spacing: -0.02em; text-decoration: none; }
+  .logo span { color: var(--acento); }
+  .nav { display: flex; gap: 24px; list-style: none; font-size: 0.92rem; }
+  .nav a { text-decoration: none; }
+  .boton { display: inline-block; padding: 12px 20px; border-radius: 999px; background: var(--tinta); color: var(--papel); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+  .boton--claro { background: var(--papel); color: var(--tinta); }
+
+  /* Hero */
+  .hero { padding: 40px 0 24px; }
+  .hero h1 { font-family: var(--titular); font-size: clamp(2.8rem, 10.5vw, 8.6rem); line-height: 0.9; letter-spacing: -0.045em; margin: 18px 0 28px; }
+  .hero h1 em { display: block; font-size: 0.92em; }
+  .hero__pie { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: end; margin-bottom: 32px; }
+  .hero__texto { max-width: 46ch; font-size: 1.08rem; }
+  .datos { display: flex; gap: 32px; justify-content: flex-end; list-style: none; }
+  .datos b { display: block; font-family: var(--titular); font-size: 1.6rem; letter-spacing: -0.03em; }
+  .foto { border-radius: 6px; overflow: hidden; background: #ddd; }
+
+  /* Secciones */
+  section { padding: 96px 0 0; }
+  .h2 { font-family: var(--titular); font-size: clamp(2.2rem, 6.5vw, 5rem); line-height: 0.95; letter-spacing: -0.04em; margin: 14px 0 40px; }
+  .estudio__grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 32px; }
+  .estudio__lema { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.3rem); line-height: 1.2; }
+
+  .proyectos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .tarjeta { background: #fbfaf6; border: 1px solid var(--linea); border-radius: 8px; padding: 12px; }
+  .tarjeta h3 { font-family: var(--titular); font-size: 1.3rem; letter-spacing: -0.02em; margin: 14px 4px 4px; }
+  .tarjeta p { margin: 0 4px 6px; color: var(--suave); font-size: 0.9rem; }
+
+  .pasos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; list-style: none; }
+  .paso { border-top: 1px solid var(--tinta); padding-top: 16px; }
+  .paso h3 { font-family: var(--titular); font-size: 1.25rem; letter-spacing: -0.02em; margin: 6px 0 8px; }
+  .paso p { color: var(--suave); font-size: 0.95rem; }
+
+  .cifras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; list-style: none; border-block: 1px solid var(--linea); padding: 40px 0; }
+  .cifra b { display: block; font-family: var(--titular); font-size: clamp(2.6rem, 6vw, 4.6rem); letter-spacing: -0.05em; line-height: 1; }
+  .cifra span { color: var(--suave); font-size: 0.9rem; }
+
+  .contacto { background: var(--oscuro); color: var(--papel); margin-top: 96px; padding: 96px 0 40px; }
+  .contacto .h2 em { color: #e3a07e; }
+  .contacto__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: end; }
+  .contacto__correo { font-family: var(--serif); font-style: italic; font-size: clamp(1.4rem, 3vw, 2.2rem); }
+  .contacto p { color: #c9c3b6; max-width: 44ch; margin-bottom: 20px; }
+  .pie { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid #3a372f; margin-top: 72px; padding-top: 20px; color: #9a9486; font-size: 0.85rem; }
+
+  @media (max-width: 860px) {
+    .nav { display: none; }
+    .hero__pie, .estudio__grid, .contacto__grid { grid-template-columns: 1fr; }
+    .datos { justify-content: flex-start; }
+    .proyectos { grid-template-columns: 1fr; }
+    .pasos, .cifras { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ───────────── Efecto «agentes construyendo» ───────────── */
+
+  /* Capa pendiente: se ve el hueco (esqueleto), pero no el contenido. */
+  .construyendo [data-capa]:not(.capa-lista) {
+    background: var(--esqueleto) !important;
+    color: transparent !important;
+    border-color: transparent !important;
+    outline: 1px dashed var(--esqueleto-borde);
+    outline-offset: -1px;
+    border-radius: 6px;
+  }
+  .construyendo [data-capa]:not(.capa-lista) * { visibility: hidden; }
+  .construyendo .contacto [data-capa]:not(.capa-lista) { background: #23324a !important; outline-color: #3f5f8a; }
+
+  /* Capa en obra: el agente la marca con su color. */
+  .construyendo [data-capa].capa-trabajando:not(.capa-lista) { outline: 2px solid var(--c); outline-offset: 2px; }
+
+  /* Entradas al terminar cada capa. */
+  .capa-entra { animation: aparece 0.5s ease-out both; }
+  .capa-entra[data-capa="titular"], .capa-entra[data-capa="texto"] { animation: barrido 0.6s cubic-bezier(.2,.7,.2,1) both; }
+  .capa-entra[data-capa="imagen"] { animation: revela 1s ease-out both; }
+  @keyframes aparece { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes barrido { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes revela { from { filter: blur(18px) saturate(0); opacity: 0.5; } }
+
+  #obra { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 40; overflow: hidden; }
+  .agente { position: absolute; top: 0; left: 0; display: flex; align-items: flex-start; gap: 2px; transition-property: transform, opacity; transition-timing-function: cubic-bezier(.25,.8,.25,1); will-change: transform; }
+  .agente svg { width: 14px; height: 18px; flex: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
+  .agente span { margin-top: 12px; padding: 2px 7px; border-radius: 999px; background: var(--c); color: var(--t, #fff); font: 600 11px/1.4 var(--cuerpo); white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .15); }
+  .agente.ocupado span { animation: latido 0.6s ease-in-out infinite alternate; }
+  @keyframes latido { to { transform: scale(1.08); } }
+
+  .hud { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 8px; border-radius: 999px; background: #121212; color: #eee; font: 500 12px/1 var(--cuerpo); box-shadow: 0 6px 24px rgb(0 0 0 / .25); transition: opacity .6s, transform .6s; white-space: nowrap; }
+  .hud__puntos { display: flex; }
+  .hud__puntos i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #121212; margin-left: -5px; }
+  .hud__puntos i:first-child { margin-left: 0; }
+  .hud__barra { width: 90px; height: 4px; border-radius: 4px; background: #333; overflow: hidden; }
+  .hud__barra b { display: block; height: 100%; width: 0; background: #f2b33d; transition: width .3s; }
+  .hud__estado { color: #f2b33d; }
+  .hud__estado::before { content: "● "; }
+  .registro { position: fixed; right: 16px; bottom: 16px; z-index: 50; width: 290px; padding: 12px; border-radius: 10px; background: #121212; color: #ddd; font: 11px/1.5 var(--mono); box-shadow: 0 6px 24px rgb(0 0 0 / .3); transition: opacity .6s; }
+  .registro__titulo { font: 600 10px/1 var(--mono); letter-spacing: .14em; color: #999; margin-bottom: 8px; }
+  .registro ol { list-style: none; min-height: 66px; }
+  .registro li { display: flex; gap: 6px; align-items: baseline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; animation: aparece .3s ease-out; }
+  .registro time { color: #777; }
+  .registro mark { padding: 0 5px; border-radius: 3px; background: var(--c); color: var(--t, #fff); font-weight: 600; }
+  .registro button, .repetir { width: 100%; margin-top: 10px; padding: 7px; border: 0; border-radius: 6px; background: #f1f1f1; color: #111; font: 600 11px/1 var(--mono); letter-spacing: .14em; cursor: pointer; pointer-events: auto; }
+  .repetir { position: fixed; right: 16px; bottom: 16px; z-index: 50; width: auto; padding: 10px 14px; background: #121212; color: #eee; letter-spacing: .05em; }
+  .oculto { opacity: 0; pointer-events: none; }
+  .hud.oculto { transform: translate(-50%, 20px); }
+
+  @media (max-width: 860px) {
+    .hud { top: 12px; bottom: auto; }
+    .hud.oculto { transform: translate(-50%, -20px); }
+    .registro { left: 16px; right: 16px; width: auto; }
+    .registro ol { min-height: 0; }
+    .registro li:nth-child(n+3) { display: none; }
+  }
+  @media (max-width: 520px) { .hud__barra, .hud__puntos { display: none; } .hud { padding: 8px 14px; } }
+</style>
+</head>
+<body>
+
+<header class="contenedor cabecera">
+  <a class="logo" href="#" data-capa="bloque" data-log="dibujó el logotipo">Estudio Brisa<span>.</span></a>
+  <nav aria-label="Principal">
+    <ul class="nav" data-capa="nav">
+      <li><a href="#proyectos">Proyectos</a></li>
+      <li><a href="#proceso">Proceso</a></li>
+      <li><a href="#estudio">Estudio</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+  <a class="boton" href="#contacto" data-capa="boton" data-log="puso el botón de contacto">Agenda una visita</a>
+</header>
+
+<main>
+  <section class="contenedor hero">
+    <p class="etiqueta" data-capa="texto" data-log="etiquetó la portada">Arquitectura residencial · desde 2011</p>
+    <h1 data-capa="titular" data-log="compuso el titular">Casas a la medida <em>del lugar.</em></h1>
+    <div class="hero__pie">
+      <p class="hero__texto" data-capa="texto" data-log="escribió la entradilla">Proyectamos viviendas que aprovechan la luz, el clima y el paisaje de cada terreno. Pocas casas al año, muy bien hechas, de la primera visita a la entrega de llaves.</p>
+      <ul class="datos" data-capa="bloque" data-log="cargó las cifras de portada">
+        <li><b>64</b><span class="etiqueta">casas</span></li>
+        <li><b>3</b><span class="etiqueta">premios</span></li>
+        <li><b>9</b><span class="etiqueta">personas</span></li>
+      </ul>
+    </div>
+    <div class="foto" data-capa="imagen" data-log="colocó la foto principal">
+      <svg viewBox="0 0 1200 600" role="img" aria-label="Casa de hormigón y vidrio entre pinos al atardecer, reflejada en una lámina de agua">
+        <defs>
+          <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#27354d"/><stop offset=".55" stop-color="#b9806a"/><stop offset="1" stop-color="#efc394"/></linearGradient>
+          <linearGradient id="vidrio" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe1ad"/><stop offset="1" stop-color="#e2954f"/></linearGradient>
+          <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c4b5f"/><stop offset="1" stop-color="#18202c"/></linearGradient>
+        </defs>
+        <rect width="1200" height="600" fill="url(#cielo)"/>
+        <circle cx="900" cy="350" r="80" fill="#ffe4bf" opacity=".5"/>
+        <path d="M0 380 Q 220 330 430 372 T 830 360 T 1200 350 V600 H0Z" fill="#4e4b52" opacity=".6"/>
+        <rect y="410" width="1200" height="40" fill="#26262a"/>
+        <g fill="#18191c">
+          <path d="M150 412 L156 250 L162 412Z"/><ellipse cx="156" cy="246" rx="96" ry="30"/>
+          <path d="M1010 412 L1017 220 L1024 412Z"/><ellipse cx="1017" cy="214" rx="120" ry="34"/>
+          <path d="M1120 412 L1125 290 L1130 412Z"/><ellipse cx="1125" cy="286" rx="70" ry="22"/>
+          <path d="M60 412 L64 310 L68 412Z"/><ellipse cx="64" cy="306" rx="60" ry="18"/>
+        </g>
+        <rect x="290" y="296" width="640" height="18" fill="#dcd5c8"/>
+        <rect x="330" y="314" width="560" height="96" fill="url(#vidrio)"/>
+        <g stroke="#3a2c22" stroke-width="3" opacity=".55">
+          <line x1="420" y1="314" x2="420" y2="410"/><line x1="520" y1="314" x2="520" y2="410"/><line x1="620" y1="314" x2="620" y2="410"/><line x1="720" y1="314" x2="720" y2="410"/><line x1="820" y1="314" x2="820" y2="410"/>
+        </g>
+        <rect x="560" y="340" width="70" height="40" fill="#3a2c22" opacity=".25"/>
+        <rect x="310" y="410" width="600" height="10" fill="#bcb5a7"/>
+        <rect y="450" width="1200" height="150" fill="url(#agua)"/>
+        <rect x="330" y="458" width="560" height="56" fill="url(#vidrio)" opacity=".3"/>
+        <rect x="290" y="452" width="640" height="6" fill="#dcd5c8" opacity=".25"/>
+      </svg>
+    </div>
+  </section>
+
+  <section class="contenedor" id="estudio">
+    <p class="etiqueta" data-capa="texto" data-log="tituló el estudio">(01) Estudio</p>
+    <div class="estudio__grid" style="margin-top:20px">
+      <p class="estudio__lema" data-capa="titular" data-log="escribió el lema">Diseñamos con la luz, el clima y la forma de vivir de cada familia.</p>
+      <p data-capa="texto" data-log="contó la historia del estudio">Somos un equipo pequeño de arquitectas, aparejadores e interioristas. Llevamos cada proyecto de principio a fin, sin intermediarios.</p>
+      <p data-capa="texto" data-log="describió los materiales">Trabajamos con materiales del lugar, orientación pensada para ahorrar energía y espacios que cambian con las estaciones.</p>
+    </div>
+  </section>
+
+  <section class="contenedor" id="proyectos">
+    <p class="etiqueta" data-capa="texto">(02) Proyectos</p>
+    <h2 class="h2" data-capa="titular" data-log="compuso «Proyectos»">Proyectos <em>recientes</em></h2>
+    <div class="proyectos">
+      <article class="tarjeta" data-capa="bloque" data-log="maquetó Casa Salitre">
+        <div class="foto" data-capa="imagen" data-log="reveló la foto de Casa Salitre">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Casa blanca de volúmenes cúbicos junto al mar">
+            <rect width="400" height="300" fill="#e9d9bf"/><rect width="400" height="120" fill="#cfe0e8"/><rect y="120" width="400" height="26" fill="#6f9fb4"/>
+            <rect x="90" y="120" width="150" height="110" fill="#fbfaf6"/><rect x="210" y="160" width="110" height="70" fill="#f2efe8"/>
+            <rect x="120" y="160" width="60" height="70" fill="#2d2a26"/><rect x="235" y="182" width="60" height="26" fill="#2d2a26"/>
+          </svg>
+        </div>
+        <h3>Casa Salitre</h3><p>Costa · 2024 · 210 m²</p>
+      </article>
+      <article class="tarjeta" data-capa="bloque" data-log="maquetó Refugio Haya">
+        <div class="foto" data-capa="imagen" data-log="reveló la foto de Refugio Haya">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Cabaña de madera oscura con una ventana iluminada en un bosque">
+            <rect width="400" height="300" fill="#a9b79c"/><rect y="200" width="400" height="100" fill="#5d6b4f"/>
+            <g fill="#3f4a35"><path d="M40 210 L70 90 L100 210Z"/><path d="M310 210 L345 70 L380 210Z"/><path d="M0 210 L20 130 L40 210Z"/></g>
+            <path d="M130 220 L200 120 L270 220Z" fill="#2c2621"/><rect x="185" y="170" width="30" height="40" fill="#ffcf86"/>
+          </svg>
+        </div>
+        <h3>Refugio Haya</h3><p>Montaña · 2025 · 95 m²</p>
+      </article>
+      <article class="tarjeta" data-capa="bloque" data-log="maquetó Patio Cobre">
+        <div class="foto" data-capa="imagen" data-log="reveló la foto de Patio Cobre">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Patio interior con muro de tono cobre, un arco y un olivo">
+            <rect width="400" height="300" fill="#c7764f"/><rect y="230" width="400" height="70" fill="#e4d6c2"/>
+            <path d="M150 230 V120 A50 50 0 0 1 250 120 V230Z" fill="#3b2a22"/>
+            <rect x="300" y="170" width="8" height="60" fill="#4a3a2c"/><ellipse cx="304" cy="160" rx="40" ry="28" fill="#6f7d55"/>
+          </svg>
+        </div>
+        <h3>Patio Cobre</h3><p>Ciudad · 2026 · 160 m²</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="contenedor" id="proceso">
+    <p class="etiqueta" data-capa="texto">(03) Proceso</p>
+    <h2 class="h2" data-capa="titular" data-log="compuso el titular del proceso">De la primera visita <em>a la llave.</em></h2>
+    <ol class="pasos">
+      <li class="paso" data-capa="bloque" data-log="explicó la visita"><span class="etiqueta">01</span><h3>Visitar</h3><p>Recorremos el terreno contigo: cómo vives, qué luz quieres y qué te sobra.</p></li>
+      <li class="paso" data-capa="bloque" data-log="explicó el proyecto"><span class="etiqueta">02</span><h3>Proyectar</h3><p>Bocetos, maqueta y planos para que recorras la casa antes de que exista.</p></li>
+      <li class="paso" data-capa="bloque" data-log="explicó la obra"><span class="etiqueta">03</span><h3>Construir</h3><p>Dirigimos la obra con calendario y presupuesto cerrados desde el primer día.</p></li>
+      <li class="paso" data-capa="bloque" data-log="explicó la entrega"><span class="etiqueta">04</span><h3>Habitar</h3><p>Te damos la llave y volvemos al año para ver cómo ha envejecido la casa.</p></li>
+    </ol>
+  </section>
+
+  <section class="contenedor">
+    <ul class="cifras">
+      <li class="cifra" data-capa="bloque" data-log="contó las casas"><b>64</b><span>casas terminadas</span></li>
+      <li class="cifra" data-capa="bloque" data-log="contó los años"><b>15</b><span>años de estudio</span></li>
+      <li class="cifra" data-capa="bloque" data-log="contó los premios"><b>3</b><span>premios regionales</span></li>
+      <li class="cifra" data-capa="bloque" data-log="contó el equipo"><b>9</b><span>personas en el equipo</span></li>
+    </ul>
+  </section>
+
+  <section class="contacto" id="contacto">
+    <div class="contenedor">
+      <p class="etiqueta" data-capa="texto">(04) Contacto</p>
+      <h2 class="h2" data-capa="titular" data-log="compuso el cierre">Hablemos <em>de tu casa.</em></h2>
+      <div class="contacto__grid">
+        <div>
+          <p data-capa="texto" data-log="escribió la invitación">Cuéntanos dónde está tu terreno y cómo quieres vivir. La primera visita es gratuita y sin compromiso.</p>
+          <a class="contacto__correo" href="mailto:hola@estudiobrisa.example" data-capa="texto" data-log="enlazó el correo">hola@estudiobrisa.example</a>
+        </div>
+        <div><a class="boton boton--claro" href="mailto:hola@estudiobrisa.example" data-capa="boton" data-log="dibujó el botón final">Agenda una visita</a></div>
+      </div>
+      <footer class="pie" data-capa="bloque" data-log="cerró el pie de página">
+        <span>Estudio Brisa · estudio ficticio para esta demo</span>
+        <span>Aviso legal · Privacidad</span>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<div id="obra" aria-hidden="true"></div>
+
+<div class="hud" aria-hidden="true" hidden>
+  <span class="hud__puntos"></span>
+  <span><b class="hud__agentes">12</b> agentes</span>
+  <span><b class="hud__hechas">0</b>/<span class="hud__total">0</span> capas</span>
+  <span class="hud__barra"><b></b></span>
+  <span class="hud__estado">construyendo</span>
+</div>
+
+<aside class="registro" hidden>
+  <p class="registro__titulo">REGISTRO DE AGENTES</p>
+  <ol aria-hidden="true"></ol>
+  <button type="button">SALTAR</button>
+</aside>
+
+<script>
+(() => {
+  const raiz = document.documentElement;
+  if (!raiz.classList.contains('construyendo')) return;
+
+  // Ajustes de la demo
+  const MODO_DEMO = true;              // muestra «Ver otra vez» al terminar
+  const CAPAS_A_LA_VEZ = 10;           // cuántas capas siguientes pueden coger los agentes
+
+  // t = color del texto de la etiqueta cuando el fondo es claro
+  const AGENTES = [
+    { nombre: 'Diseño',   color: '#7c5cff' },
+    { nombre: 'Copy',     color: '#ff4d6d' },
+    { nombre: 'Fotos',    color: '#2f8fff' },
+    { nombre: 'Maqueta',  color: '#18a865' },
+    { nombre: 'Tipos',    color: '#ff8a1f' },
+    { nombre: 'SEO',      color: '#f2c81b', t: '#1a1a1a' },
+    { nombre: 'Motion',   color: '#00aebb' },
+    { nombre: 'Color',    color: '#e04fb8' },
+    { nombre: 'Datos',    color: '#4f63e8' },
+    { nombre: 'Móvil',    color: '#86c13f', t: '#1a1a1a' },
+    { nombre: 'Accesib.', color: '#d9542b' },
+    { nombre: 'QA',       color: '#8d949b', revisa: true },  // no construye: repasa lo terminado
+  ];
+  // Qué agentes prefieren cada tipo de capa (si están ocupados, la coge cualquiera)
+  const ROLES = {
+    titular: ['Copy', 'Tipos'],
+    texto:   ['Copy', 'Tipos', 'SEO'],
+    imagen:  ['Fotos', 'Color', 'Motion'],
+    bloque:  ['Maqueta', 'Diseño', 'Móvil', 'Datos'],
+    boton:   ['Diseño', 'Accesib.', 'Motion'],
+    nav:     ['Maqueta', 'Accesib.', 'SEO'],
+  };
+  const VERBOS = {
+    titular: 'compuso un titular', texto: 'escribió un texto', imagen: 'colocó una imagen',
+    bloque: 'maquetó un bloque', boton: 'dibujó un botón', nav: 'montó la navegación',
+  };
+
+  const capas = [...document.querySelectorAll('[data-capa]')];
+  const pendientes = capas.slice();
+  const obra = document.getElementById('obra');
+  const hud = document.querySelector('.hud');
+  const registro = document.querySelector('.registro');
+  const lista = registro.querySelector('ol');
+  const $hechas = hud.querySelector('.hud__hechas');
+  const $barra = hud.querySelector('.hud__barra b');
+  const $estado = hud.querySelector('.hud__estado');
+  const t0 = performance.now();
+  let hechas = 0;
+  const terminadas = [];
+  let cancelado = false;
+  let seguir = true;
+
+  const espera = ms => new Promise(r => setTimeout(r, ms));
+  const azar = (a, b) => a + Math.random() * (b - a);
+  const enDocumento = el => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+  };
+
+  // ── Interfaz ──
+  hud.hidden = false;
+  registro.hidden = false;
+  hud.querySelector('.hud__total').textContent = capas.length;
+  hud.querySelector('.hud__agentes').textContent = AGENTES.length;
+  hud.querySelector('.hud__puntos').innerHTML = AGENTES.map(a => `<i style="background:${a.color}"></i>`).join('');
+
+  const ajustarObra = () => { obra.style.height = document.documentElement.scrollHeight + 'px'; };
+  ajustarObra();
+  addEventListener('resize', ajustarObra);
+
+  const PUNTERO = '<svg viewBox="0 0 14 18"><path d="M1 1 L1 15 L5 11 L8 17 L10.5 16 L7.5 10 L13 10 Z" fill="var(--c)" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+  const vista = enDocumento(document.querySelector('.hero'));
+  AGENTES.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'agente';
+    el.style.setProperty('--c', a.color);
+    if (a.t) el.style.setProperty('--t', a.t);
+    el.innerHTML = PUNTERO + `<span>${a.nombre}</span>`;
+    a.x = azar(vista.x + 40, vista.x + vista.w - 120);
+    a.y = azar(vista.y + 80, vista.y + Math.min(vista.h, innerHeight) - 80);
+    el.style.transform = `translate(${a.x}px, ${a.y}px)`;
+    el.style.opacity = '0';
+    obra.appendChild(el);
+    a.el = el;
+  });
+
+  const anotar = (agente, texto) => {
+    const s = ((performance.now() - t0) / 1000).toFixed(1).padStart(4, '0');
+    const li = document.createElement('li');
+    const t = agente.t ? `;--t:${agente.t}` : '';
+    li.innerHTML = `<time>00:${s}</time><mark style="--c:${agente.color}${t}">${agente.nombre}</mark>`;
+    li.append(' ' + texto);
+    lista.prepend(li);
+    while (lista.children.length > 4) lista.lastElementChild.remove();
+  };
+
+  // ── Lógica de obra ──
+  const tieneAncestroPendiente = el => {
+    const p = el.parentElement && el.parentElement.closest('[data-capa]');
+    return !!p && !p.classList.contains('capa-lista');
+  };
+
+  const siguienteCapa = agente => {
+    const ventana = pendientes.slice(0, CAPAS_A_LA_VEZ);
+    let i = ventana.findIndex(el => !tieneAncestroPendiente(el) && (ROLES[el.dataset.capa] || []).includes(agente.nombre));
+    if (i < 0) i = ventana.findIndex(el => !tieneAncestroPendiente(el));
+    return i < 0 ? null : pendientes.splice(i, 1)[0];
+  };
+
+  const mover = async (agente, x, y) => {
+    const d = Math.hypot(x - agente.x, y - agente.y);
+    const ms = Math.max(350, Math.min(900, d * 0.9));
+    agente.el.style.transitionDuration = ms + 'ms';
+    agente.el.style.transform = `translate(${x}px, ${y}px)`;
+    agente.x = x; agente.y = y;
+    await espera(ms);
+  };
+
+  const terminarCapa = el => {
+    el.classList.remove('capa-trabajando');
+    el.classList.add('capa-lista', 'capa-entra');
+    terminadas.push(el);
+    el.addEventListener('animationend', () => el.classList.remove('capa-entra'), { once: true });
+  };
+
+  const actualizarHud = () => {
+    $hechas.textContent = hechas;
+    $barra.style.width = (hechas / capas.length * 100) + '%';
+  };
+
+  const trabajar = async (agente, retraso) => {
+    await espera(retraso);
+    if (cancelado) return;
+    agente.el.style.opacity = '1';
+    while (!cancelado) {
+      const el = siguienteCapa(agente);
+      if (!el) {
+        if (!pendientes.length) break;
+        await espera(120);
+        continue;
+      }
+      const r = enDocumento(el);
+      await mover(agente, r.x + r.w * azar(0.15, 0.8), r.y + Math.min(r.h, 260) * azar(0.2, 0.75));
+      if (cancelado) return;
+      el.style.setProperty('--c', agente.color);
+      el.classList.add('capa-trabajando');
+      agente.el.classList.add('ocupado');
+      await espera(azar(900, 1800));
+      if (cancelado) return;
+      agente.el.classList.remove('ocupado');
+      terminarCapa(el);
+      hechas++;
+      actualizarHud();
+      anotar(agente, el.dataset.log || VERBOS[el.dataset.capa] || 'terminó una capa');
+    }
+  };
+
+  // QA va detrás de los demás, repasando capas recién terminadas.
+  const revisar = async (agente, retraso) => {
+    await espera(retraso);
+    if (cancelado) return;
+    agente.el.style.opacity = '1';
+    while (!cancelado && hechas < capas.length) {
+      const el = terminadas[terminadas.length - 1 - Math.floor(Math.random() * Math.min(4, terminadas.length))];
+      if (!el) { await espera(300); continue; }
+      const r = enDocumento(el);
+      await mover(agente, r.x + r.w * azar(0.2, 0.8), r.y + Math.min(r.h, 260) * azar(0.2, 0.75));
+      agente.el.classList.add('ocupado');
+      await espera(azar(700, 1300));
+      agente.el.classList.remove('ocupado');
+    }
+  };
+
+  // La página baja sola siguiendo la obra, salvo que el usuario haga scroll.
+  const dejarDeSeguir = () => { seguir = false; };
+  ['wheel', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, dejarDeSeguir, { passive: true, once: true }));
+  const seguimiento = setInterval(() => {
+    if (!seguir || cancelado) return;
+    const primera = capas.find(el => !el.classList.contains('capa-lista'));
+    if (!primera) return;
+    const top = primera.getBoundingClientRect().top;
+    if (top > innerHeight * 0.55 || top < 0) {
+      scrollTo({ top: scrollY + top - innerHeight * 0.22, behavior: 'smooth' });
+    }
+  }, 500);
+
+  const cerrar = () => {
+    clearInterval(seguimiento);
+    $estado.textContent = 'lista';
+    $estado.style.color = '#7ddc8a';
+    setTimeout(() => {
+      AGENTES.forEach(a => { a.el.style.opacity = '0'; });
+      hud.classList.add('oculto');
+      registro.classList.add('oculto');
+      raiz.classList.remove('construyendo');
+      if (MODO_DEMO) {
+        const b = document.createElement('button');
+        b.className = 'repetir';
+        b.type = 'button';
+        b.textContent = '↻ Ver otra vez';
+        b.onclick = () => { scrollTo(0, 0); location.reload(); };
+        document.body.appendChild(b);
+      }
+      setTimeout(() => { obra.remove(); hud.remove(); registro.remove(); }, 700);
+    }, 1400);
+  };
+
+  const saltar = () => {
+    if (cancelado) return;
+    cancelado = true;
+    capas.forEach(el => { el.classList.remove('capa-trabajando'); el.classList.add('capa-lista'); });
+    hechas = capas.length;
+    actualizarHud();
+    cerrar();
+  };
+  registro.querySelector('button').addEventListener('click', saltar);
+
+  // Red de seguridad: si algo falla, la página nunca se queda a medias.
+  setTimeout(saltar, 45000);
+
+  scrollTo(0, 0);
+  Promise.all(AGENTES.map((a, i) => (a.revisa ? revisar : trabajar)(a, 150 + i * 90)))
+    .then(() => {
+      if (cancelado) return;
+      cancelado = true;
+      const qa = AGENTES.find(a => a.nombre === 'QA');
+      anotar(qa, 'revisó la página: todo en su sitio');
+      cerrar();
+    })
+    .catch(saltar);
+})();
+</script>
+</body>
+</html>
