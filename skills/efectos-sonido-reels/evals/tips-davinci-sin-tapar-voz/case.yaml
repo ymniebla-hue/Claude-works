@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: tips-davinci-sin-tapar-voz
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  Un mapa de sonido para un reel de 24 s con voz casi continua (cortes en 3.0, 10.0, 17.0 y 21.5 s; textos que
+  aparecen en 0.8, 4.0, 7.0, 11.0, 14.0, 18.0 y 22.5 s). Whooshes en los cortes, pops en los textos, efectos
+  bajo la voz más suaves, términos de Envato en inglés, y la nota de que DaVinci empieza en 01:00:00:00.

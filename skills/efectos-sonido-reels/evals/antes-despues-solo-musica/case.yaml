@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: antes-despues-solo-musica
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  Un mapa de sonido para un antes/después de 15 s sin voz (destello blanco y corte al "después" en 5.0 s, corte
+  al CTA en 11.0 s). La revelación en 5.0 s lleva una pila de capas (build-up que termina en el corte + impacto),
+  volúmenes pensados para un reel solo con música, términos de Envato en inglés e instrucciones para Premiere.

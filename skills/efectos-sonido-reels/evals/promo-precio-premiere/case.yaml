@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: promo-precio-premiere
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  Un mapa de sonido para un reel promocional de 20 s (cortes en 2.5, 6.0, 9.5, 13.0 y 16.0 s; precio "$59"
+  revelado en 7.5 s tras una pausa de la voz). Cada efecto con timecode, término de búsqueda en inglés para
+  Envato y volumen; un impacto en la revelación del precio; sonido en el hook; instrucciones para Premiere.
