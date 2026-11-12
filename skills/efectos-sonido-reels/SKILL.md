@@ -66,6 +66,8 @@ Escribe `mapa_sonido.md` en la carpeta del análisis con la plantilla de abajo. 
 
 **Términos de Envato**: siempre en inglés, porque el catálogo de Envato está etiquetado en inglés. Da un término principal y una alternativa, de 1 a 3 palabras con un adjetivo de carácter (*short, deep, soft, cinematic, digital, airy, punchy*). Arma el link así: `https://elements.envato.com/sound-effects/<termino-con-guiones>`, por ejemplo `https://elements.envato.com/sound-effects/whoosh-transition`. Si un link no abre la búsqueda, el término sirve igual en el buscador de Envato o en la extensión de Envato para Premiere.
 
+**Si la sesión tiene el conector de Envato** (herramientas con "envato" en el nombre), úsalo para buscar cada fila del kit con su término. Elige 1 o 2 sonidos reales por fila: los de duración corta, que encajen con el carácter pedido y, si hay, de un mismo pack para las variantes. En la columna "Buscar en Envato" pon el título exacto y su enlace, y deja el término como alternativa. Sin conector, no inventes títulos de sonidos: da solo términos. Si el conector permite descargar o licenciar, no lo hagas sin que la persona lo pida, porque cada descarga registra una licencia para un proyecto: pregunta antes y usa el nombre del reel como proyecto.
+
 **Timecodes**: usa `HH:MM:SS:FF`, que es como los muestran Premiere y DaVinci. Indica también los segundos. Los del análisis empiezan en `00:00:00:00`. La línea de tiempo de DaVinci suele empezar en `01:00:00:00`, así que avisa que hay que sumar una hora. En Premiere normalmente empieza en cero.
 
 ## Plantilla de `mapa_sonido.md`
